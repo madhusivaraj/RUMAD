@@ -34,8 +34,8 @@ def books():
         }
         book_collection = book_db['books']
         if book_collection.count({'title': title}, limit=1):
-            return JSONEncoder().encode(book_collection.find_one({"title": title}))
-        else:
+            return "Book already inserted"
+	else:
             book_collection.insert_one(res)
             return "Book inserted"
 
