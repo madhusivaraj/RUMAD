@@ -31,7 +31,7 @@ def books():
         "description": body["description"]
     }
     book_collection = book_db['books']
-    if book_collection.count({'title': title}, limit=1):
+    if book_collection.find_one({'title': title}):
         return "Book already inserted"
     book_collection.insert_one(book)
     return "Book inserted"
