@@ -27,7 +27,7 @@ def books():
     elif request.method == "POST":
         body = request.get_json()
         title = body["title"]
-        res = {
+        book = {
             "title": title,
             "author": body["author"],
             "description": body["description"]
@@ -35,9 +35,8 @@ def books():
         book_collection = book_db['books']
         if book_collection.count({'title': title}, limit=1):
             return "Book already inserted"
-	else:
-            book_collection.insert_one(res)
-            return "Book inserted"
+        book_collection.insert_one(book)
+        return "Book inserted"
 
 
 #search_book
