@@ -42,9 +42,10 @@ def books():
 def find_book():
     title = request.args.get('title')
     book_collection = book_db['books']
+    book_info = book_collection.find_one({'title': title})
     if title is None:
         return JSONEncoder().encode(list(book_collection.find()))
-    elif book_collection.find_one({'title': title}):
-        return JSONEncoder().encode(book_collection.find_one({"title": title}))
+    elif book_info:
+        return JSONEncoder().encode(book_info)
     else:
         return "Book not found"
