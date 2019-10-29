@@ -1,6 +1,8 @@
-# - Installing and understanding what it does
-# - Build GET and POST /books route with insert and find
-# - you'll have to explain the JSON encoder.
+# {
+# 	"title": "Little Women5",
+# 	"author": "Louisa May Alcott5",
+# 	"description": "4 sisters in MA5"
+# }
 
 import json
 from flask import Flask, request
@@ -19,32 +21,30 @@ class JSONEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 #insert_book
-@app.route("/books", methods=["POST", "GET"])
+@app.route("/books", methods=["POST"])
 def books():
-    if request.method == "GET":
-        book_collection = book_db['books']
-        return JSONEncoder().encode(list(book_collection.find()))
-    elif request.method == "POST":
-        body = request.get_json()
-        title = body["title"]
-        book = {
-            "title": title,
-            "author": body["author"],
-            "description": body["description"]
-        }
-        book_collection = book_db['books']
-        if book_collection.count({'title': title}, limit=1):
-            return "Book already inserted"
-        book_collection.insert_one(book)
-        return "Book inserted"
+    body = request.get_json()
+    title = body["title"]
+    book = {
+        "title": title,
+        "author": body["author"],
+        "description": body["description"]
+    }
+    book_collection = book_db['books']
+    if book_collection.count({'title': title}, limit=1):
+        return "Book already inserted"
+    book_collection.insert_one(book)
+    return "Book inserted"
 
 
 #search_book
-@app.route("/books/<book_title>", methods=["GET"])
-def find_book(book_title):
+@app.route("/books", methods=["GET"])
+def find_book():
+    title = request.args.get('title')
     book_collection = book_db['books']
-    if book_collection.count({'title': book_title}, limit=1):
-        return JSONEncoder().encode(book_collection.find_one({"title": book_title}))
+    if title is None:
+        return JSONEncoder().encode(list(book_collection.find()))
+    elif book_collection.find_one({'title': title}):
+        return JSONEncoder().encode(book_collection.find_one({"title": title}))
     else:
         return "Book not found"
-
